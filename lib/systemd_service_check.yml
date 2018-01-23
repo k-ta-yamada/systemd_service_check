@@ -1,8 +1,11 @@
 # SERVICE TO BE CHECKED
 :services: &default_services
-  - sshd
-  - firewalld
-  - rsyslog
+  - sshd.service
+  - firewalld.service
+  - dummy.service
+  - rsyslog.service
+  - "12345678901234567890123456789012345678901234567890"
+  - systemd-tmpfiles-clean.timer
 
 # SERVERS TO BE CHECKED
 :servers:
