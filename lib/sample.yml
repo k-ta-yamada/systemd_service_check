@@ -1,0 +1,23 @@
+# SERVICE TO BE CHECKED
+:services: &default_services
+  - sshd
+  - firewalld
+  - rsyslog
+
+# SERVERS TO BE CHECKED
+:servers:
+  - :env:  dev
+    :ip:   192.168.1.101
+    :user: root
+    :pass: vagrant
+    :services: *default_services
+  - :env:  stg
+    :ip:   centos7
+    :user: root
+    :pass: vagrant
+    :services: *default_services
+  - :env:  prd
+    :ip:   centos7
+    :user: root
+    :pass: vagrant
+    :services: *default_services
