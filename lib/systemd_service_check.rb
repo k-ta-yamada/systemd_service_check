@@ -5,8 +5,8 @@ require 'table_print'
 require 'awesome_print'
 require 'pry'
 
-# ServiceCheck
-class ServiceCheck
+# SystemdServiceCheck
+class SystemdServiceCheck
   Server  = Struct.new(:env, :ip, :user, :pass, :services, :hostname)
   Service = Struct.new(:service_name, :is_active, :is_enabled, :show)
   Result  = Struct.new(:server, :services)
@@ -92,5 +92,5 @@ class ServiceCheck
   end
 end
 
-sc = ServiceCheck.run(ARGV)
+sc = SystemdServiceCheck.run(ARGV)
 sc.disp

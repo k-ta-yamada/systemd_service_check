@@ -19,16 +19,16 @@ edit `./lib/sample.yml`
 ### bundle exec ruby
 
 ```rb
-bundle exec ruby ./lib/service_check.rb # => dev
-bundle exec ruby ./lib/service_check.rb stg prd
-bundle exec ruby ./lib/service_check.rb all # => dev stg prd
+bundle exec ruby ./lib/systemd_service_check.rb # => dev
+bundle exec ruby ./lib/systemd_service_check.rb stg prd
+bundle exec ruby ./lib/systemd_service_check.rb all # => dev stg prd
 ```
 
 ### required
 
 ```rb
-bundle exec pry -r ./lib/service_check.rb
-sc = ServiceCheck.run(["dev"])
+bundle exec pry -r ./lib/systemd_service_check.rb
+sc = SystemdServiceCheck.run(["dev"])
 sc.disp
 sc.to_json
 ap sc.results
@@ -99,8 +99,8 @@ puts sc.to_json
 ```rb
 ap sc.results
 # => [
-    [0] #<Struct:ServiceCheck::Result:0x7fad2fc4f5c0
-        server = #<Struct:ServiceCheck::Server:0x7fad2fc4f7c8
+    [0] #<Struct:SystemdServiceCheck::Result:0x7fad2fc4f5c0
+        server = #<Struct:SystemdServiceCheck::Server:0x7fad2fc4f7c8
             env = "dev",
             hostname = "centos7",
             ip = "192.168.1.101",
@@ -113,7 +113,7 @@ ap sc.results
             user = "root"
         >,
         services = [
-            [0] #<Struct:ServiceCheck::Service:0x7fad2e36fb40
+            [0] #<Struct:SystemdServiceCheck::Service:0x7fad2e36fb40
                 is_active = "active",
                 is_enabled = "enabled",
                 service_name = "sshd",
@@ -121,7 +121,7 @@ ap sc.results
                     [0] "EnvironmentFile=/etc/sysconfig/sshd (ignore_errors=no)"
                 ]
             >,
-            [1] #<Struct:ServiceCheck::Service:0x7fad2d16fb20
+            [1] #<Struct:SystemdServiceCheck::Service:0x7fad2d16fb20
                 is_active = "unknown",
                 is_enabled = "disabled",
                 service_name = "firewalld",
@@ -129,7 +129,7 @@ ap sc.results
                     [0] "EnvironmentFile=/etc/sysconfig/firewalld (ignore_errors=yes)"
                 ]
             >,
-            [2] #<Struct:ServiceCheck::Service:0x7fad2fc8ff08
+            [2] #<Struct:SystemdServiceCheck::Service:0x7fad2fc8ff08
                 is_active = "active",
                 is_enabled = "enabled",
                 service_name = "rsyslog",
