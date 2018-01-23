@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require "./lib/systemd_service_check/cli"
+SystemdServiceCheck::CLI.start

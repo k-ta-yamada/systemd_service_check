@@ -14,43 +14,65 @@ bundle install --path vendor/bundle
 
 edit `./lib/sample.yml`
 
-## usage
-
-### bundle exec ruby
+## Usage at `require library`
 
 ```rb
-bundle exec ruby ./lib/systemd_service_check.rb # => dev
-bundle exec ruby ./lib/systemd_service_check.rb stg prd
-bundle exec ruby ./lib/systemd_service_check.rb all # => dev stg prd
+$ bundle exec pry -r ./lib/systemd_service_check.rb
+
+ssc = SystemdServiceCheck::SystemdServiceCheckBase.new
+ssc.run
+
+puts ssc.to_json
 ```
 
-### required
+## Usage as `CLI`
 
-```rb
-bundle exec pry -r ./lib/systemd_service_check.rb
-sc = SystemdServiceCheck.run(["dev"])
-sc.disp
-sc.to_json
-ap sc.results
+### bundle exec ./bin/ssc
+
+```sh
+$ bundle exec ./bin/ssc
+Commands:
+  ssc check ENV [ENV...]  # check target Env Server
+  ssc help [COMMAND]      # Describe available commands or one specific command
 ```
 
-### SeviceCheck#disp
+```sh
+$ bundle exec ./bin/ssc help check
+Usage:
+  ssc check ENV [ENV...] options
 
-```rb
-sc.disp
-# =>  ****************************************************************************************************
-  ENV | IP            | HOSTNAME | USER | SERVICE_NAME | IS_ACTIVE | IS_ENABLED | SHOW
-  ----|---------------|----------|------|--------------|-----------|------------|-------------------------------
-  dev | 192.168.1.101 | centos7  | root | sshd         | active    | enabled    | ["EnvironmentFile=/etc/sysc...
-  dev | 192.168.1.101 | centos7  | root | firewalld    | unknown   | disabled   | ["EnvironmentFile=/etc/sysc...
-  dev | 192.168.1.101 | centos7  | root | rsyslog      | active    | enabled    | ["EnvironmentFile=/etc/sysc...
+Options:
+  -t, [--table], [--no-table]      # Displaying results using table_print
+  -j, [--json], [--no-json]        # Result display in json format
+  -a, [--awesome], [--no-awesome]  # Displaying results using awesome_print
+
+check target ENV Servers.
+default option is `-t, [--table]`
+
 ```
 
-### SeviceCheck#to_json
+### bundle exec ./bin/ssc check [OPTIONS]
 
-```rb
-puts sc.to_json
-# => [
+default option is `-t, [--table]`
+
+#### -t, --table
+
+```sh
+$ bundle exec ./bin/ssc check
+
+ENV | IP            | HOSTNAME | USER | SERVICE_NAME | IS_ACTIVE | IS_ENABLED | SHOW
+----|---------------|----------|------|--------------|-----------|------------|-------------------------------
+dev | 192.168.1.101 | centos7  | root | sshd         | active    | enabled    | ["EnvironmentFile=/etc/sysc...
+dev | 192.168.1.101 | centos7  | root | firewalld    | unknown   | disabled   | ["EnvironmentFile=/etc/sysc...
+dev | 192.168.1.101 | centos7  | root | rsyslog      | active    | enabled    | ["EnvironmentFile=/etc/sysc...
+```
+
+#### -j, --json
+
+with `jq`
+
+```sh
+$ bundle exec ./bin/ssc check -j | jq .
   {
     "server": {
       "env": "dev",
@@ -94,13 +116,13 @@ puts sc.to_json
 ]
 ```
 
-### SeviceCheck#results with awesome_ptint
+#### -a, --awesome
 
-```rb
-ap sc.results
-# => [
-    [0] #<Struct:SystemdServiceCheck::Result:0x7fad2fc4f5c0
-        server = #<Struct:SystemdServiceCheck::Server:0x7fad2fc4f7c8
+```sh
+$ bundle exec ./bin/ssc check -a
+[
+    [0] #<Struct:SystemdServiceCheck::SystemdServiceCheckBase::Result:0x7fb3842c86b8
+        server = #<Struct:SystemdServiceCheck::SystemdServiceCheckBase::Server:0x7fb3842c8b18
             env = "dev",
             hostname = "centos7",
             ip = "192.168.1.101",
@@ -113,7 +135,7 @@ ap sc.results
             user = "root"
         >,
         services = [
-            [0] #<Struct:SystemdServiceCheck::Service:0x7fad2e36fb40
+            [0] #<Struct:SystemdServiceCheck::SystemdServiceCheckBase::Service:0x7fb3849029e8
                 is_active = "active",
                 is_enabled = "enabled",
                 service_name = "sshd",
@@ -121,7 +143,7 @@ ap sc.results
                     [0] "EnvironmentFile=/etc/sysconfig/sshd (ignore_errors=no)"
                 ]
             >,
-            [1] #<Struct:SystemdServiceCheck::Service:0x7fad2d16fb20
+            [1] #<Struct:SystemdServiceCheck::SystemdServiceCheckBase::Service:0x7fb384a62450
                 is_active = "unknown",
                 is_enabled = "disabled",
                 service_name = "firewalld",
@@ -129,7 +151,7 @@ ap sc.results
                     [0] "EnvironmentFile=/etc/sysconfig/firewalld (ignore_errors=yes)"
                 ]
             >,
-            [2] #<Struct:SystemdServiceCheck::Service:0x7fad2fc8ff08
+            [2] #<Struct:SystemdServiceCheck::SystemdServiceCheckBase::Service:0x7fb3849a8bb8
                 is_active = "active",
                 is_enabled = "enabled",
                 service_name = "rsyslog",

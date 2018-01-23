@@ -11,3 +11,8 @@ Style/StringLiterals:
   Enabled: false
 Style/StringLiteralsInInterpolation:
   Enabled: false
+
+AllCops:
+  Exclude:
+    - Vagrantfile
+    - vendor/**/*
