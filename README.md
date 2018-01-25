@@ -1,165 +1,46 @@
-# systemd_service_check
 
-It is a script that checks `systemd service` on the server using net-ssh.
+# SystemdServiceCheck
 
-## setup
+[![Build Status](https://travis-ci.org/k-ta-yamada/systemd_service_check.svg?branch=master)](https://travis-ci.org/k-ta-yamada/systemd_service_check)
 
-### bundle install
+Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/systemd_service_check`. To experiment with that code, run `bin/console` for an interactive prompt.
 
-```sh
-bundle install --path vendor/bundle
+TODO: Delete this and the text above, and describe your gem
+
+## Installation
+
+Add this line to your application's Gemfile:
+
+```ruby
+gem 'systemd_service_check'
 ```
 
-### configure yaml
+And then execute:
 
-edit `./lib/sample.yml`
+    $ bundle
 
-## Usage at `require library`
+Or install it yourself as:
 
-```rb
-$ bundle exec pry -r ./lib/systemd_service_check.rb
+    $ gem install systemd_service_check
 
-ssc = SystemdServiceCheck::SystemdServiceCheckBase.new
-ssc.run
+## Usage
 
-puts ssc.to_json
-```
+TODO: Write usage instructions here
 
-## Usage as `CLI`
+## Development
 
-### bundle exec ./bin/ssc
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-```sh
-$ bundle exec ./bin/ssc
-Commands:
-  ssc check ENV [ENV...]  # check target Env Server
-  ssc help [COMMAND]      # Describe available commands or one specific command
-```
+To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
-```sh
-$ bundle exec ./bin/ssc help check
-Usage:
-  ssc check ENV [ENV...] options
+## Contributing
 
-Options:
-  -t, [--table], [--no-table]      # Displaying results using table_print
-  -j, [--json], [--no-json]        # Result display in json format
-  -a, [--awesome], [--no-awesome]  # Displaying results using awesome_print
+Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/systemd_service_check. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
-check target ENV Servers.
-default option is `-t, [--table]`
+## License
 
-```
+The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
-### bundle exec ./bin/ssc check [OPTIONS]
+## Code of Conduct
 
-default option is `-t, [--table]`
-
-#### -t, --table
-
-```sh
-$ bundle exec ./bin/ssc check
-
-ENV | IP            | HOSTNAME | USER | SERVICE_NAME | IS_ACTIVE | IS_ENABLED | SHOW
-----|---------------|----------|------|--------------|-----------|------------|-------------------------------
-dev | 192.168.1.101 | centos7  | root | sshd         | active    | enabled    | ["EnvironmentFile=/etc/sysc...
-dev | 192.168.1.101 | centos7  | root | firewalld    | unknown   | disabled   | ["EnvironmentFile=/etc/sysc...
-dev | 192.168.1.101 | centos7  | root | rsyslog      | active    | enabled    | ["EnvironmentFile=/etc/sysc...
-```
-
-#### -j, --json
-
-with `jq`
-
-```sh
-$ bundle exec ./bin/ssc check -j | jq .
-  {
-    "server": {
-      "env": "dev",
-      "ip": "192.168.1.101",
-      "user": "root",
-      "pass": "vagrant",
-      "services": [
-        "sshd",
-        "firewalld",
-        "rsyslog"
-      ],
-      "hostname": "centos7"
-    },
-    "services": [
-      {
-        "service_name": "sshd",
-        "is_active": "active",
-        "is_enabled": "enabled",
-        "show": [
-          "EnvironmentFile=/etc/sysconfig/sshd (ignore_errors=no)"
-        ]
-      },
-      {
-        "service_name": "firewalld",
-        "is_active": "unknown",
-        "is_enabled": "disabled",
-        "show": [
-          "EnvironmentFile=/etc/sysconfig/firewalld (ignore_errors=yes)"
-        ]
-      },
-      {
-        "service_name": "rsyslog",
-        "is_active": "active",
-        "is_enabled": "enabled",
-        "show": [
-          "EnvironmentFile=/etc/sysconfig/rsyslog (ignore_errors=yes)"
-        ]
-      }
-    ]
-  }
-]
-```
-
-#### -a, --awesome
-
-```sh
-$ bundle exec ./bin/ssc check -a
-[
-    [0] #<Struct:SystemdServiceCheck::SystemdServiceCheckBase::Result:0x7fb3842c86b8
-        server = #<Struct:SystemdServiceCheck::SystemdServiceCheckBase::Server:0x7fb3842c8b18
-            env = "dev",
-            hostname = "centos7",
-            ip = "192.168.1.101",
-            pass = "vagrant",
-            services = [
-                [0] "sshd",
-                [1] "firewalld",
-                [2] "rsyslog"
-            ],
-            user = "root"
-        >,
-        services = [
-            [0] #<Struct:SystemdServiceCheck::SystemdServiceCheckBase::Service:0x7fb3849029e8
-                is_active = "active",
-                is_enabled = "enabled",
-                service_name = "sshd",
-                show = [
-                    [0] "EnvironmentFile=/etc/sysconfig/sshd (ignore_errors=no)"
-                ]
-            >,
-            [1] #<Struct:SystemdServiceCheck::SystemdServiceCheckBase::Service:0x7fb384a62450
-                is_active = "unknown",
-                is_enabled = "disabled",
-                service_name = "firewalld",
-                show = [
-                    [0] "EnvironmentFile=/etc/sysconfig/firewalld (ignore_errors=yes)"
-                ]
-            >,
-            [2] #<Struct:SystemdServiceCheck::SystemdServiceCheckBase::Service:0x7fb3849a8bb8
-                is_active = "active",
-                is_enabled = "enabled",
-                service_name = "rsyslog",
-                show = [
-                    [0] "EnvironmentFile=/etc/sysconfig/rsyslog (ignore_errors=yes)"
-                ]
-            >
-        ]
-    >
-]
-```
+Everyone interacting in the SystemdServiceCheck project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/systemd_service_check/blob/master/CODE_OF_CONDUCT.md).
