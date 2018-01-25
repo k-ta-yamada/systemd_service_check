@@ -1,5 +1,6 @@
 # SystemdServiceCheck
 
+[![Gem Version](https://badge.fury.io/rb/systemd_service_check.svg)](https://badge.fury.io/rb/systemd_service_check)
 [![Build Status](https://travis-ci.org/k-ta-yamada/systemd_service_check.svg?branch=master)](https://travis-ci.org/k-ta-yamada/systemd_service_check)
 
 It is a script that checks `systemd service` on the server using net-ssh.
