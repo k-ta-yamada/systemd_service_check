@@ -37,7 +37,7 @@ usage as CLI: `ssc check -y ./path/to/setting.yml`
 require 'systemd_service_check'
 
 ssc = SystemdServiceCheck::Base.new
-ssc.run
+
 puts ssc.to_json
 ```
 
@@ -57,13 +57,11 @@ Usage:
   ssc check ENV [ENV...] options
 
 Options:
-  -t, [--table], [--no-table]               # Displaying results using table_print
-  -j, [--json], [--no-json]                 # Result display in json format
-  -a, [--awesome], [--no-awesome]           # Displaying results using awesome_print
+  -f, [--format=table]                      # [t]able, [j]son, [a]wesome_print
+                                            # Default: table
   -y, [--yaml=./systemd_service_check.yml]  # setting yaml file
 
 check target ENV Servers.
-default option is `-t, [--table]`
 ```
 
 ```sh
@@ -79,7 +77,7 @@ dev | 192.168.1.101 | centos7  | root | systemd-tmpfiles-clean.timer            
 ```
 
 ```sh
-$ ssc check -j | jq
+$ ssc check --format=json | jq
 [
   {
     "server": {
@@ -140,7 +138,7 @@ $ ssc check -j | jq
 ```
 
 ```sh
-$ ssc check -a
+$ ssc check --format=awesome_print
 [
     [0] #<Struct:SystemdServiceCheck::Base::Result:0x7fa4cec5aa10
         server = #<Struct:SystemdServiceCheck::Base::Server:0x7fa4cdbfc088

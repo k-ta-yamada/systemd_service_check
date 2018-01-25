@@ -29,6 +29,7 @@ module SystemdServiceCheck
       @results = []
       load_settings(yaml)
       configure_target_servers
+      run
     end
 
     def run

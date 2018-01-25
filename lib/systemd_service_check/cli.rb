@@ -8,23 +8,14 @@ require 'pry' # forDebug
 module SystemdServiceCheck
   # CLI
   class CLI < Thor
-    class InvalidOption < StandardError; end
+    class InvalidFormatOption < StandardError; end
 
-    option :table,
-           type:    :boolean,
-           default: false,
-           aliases: '-t',
-           desc:    'Displaying results using table_print'
-    option :json,
-           type:    :boolean,
-           default: false,
-           aliases: '-j',
-           desc:    'Result display in json format'
-    option :awesome,
-           type:    :boolean,
-           default: false,
-           aliases: '-a',
-           desc:    'Displaying results using awesome_print'
+    option :format,
+           type:    :string,
+           aliases: '-f',
+           desc:    "[t]able, [j]son, [a]wesome_print",
+           banner:  'table',
+           default: 'table'
     option :yaml,
            type:    :string,
            aliases: '-y',
@@ -32,18 +23,13 @@ module SystemdServiceCheck
            banner:  './systemd_service_check.yml'
     # default: '../../lib/sample.yml'
 
-    description = <<~"STRING"
-      check target ENV Servers.
-      default option is `-t, [--table]`
-    STRING
-    desc "check ENV [ENV...] options", description
+    desc "check ENV [ENV...] options", "check target ENV Servers."
     def check(*env)
-      raise InvalidOption if options.values.count(true) > 1
+      raise InvalidFormatOption unless format_option_validate
       @ssc = Base.new(argv: env, yaml: options[:yaml])
-      @ssc.run
       disp
-    rescue InvalidOption => e
-      puts "<#{e}>: Multiple display format options can not be specified"
+    rescue InvalidFormatOption => e
+      puts "<#{e}>: [#{options[:format]}] is invalid value}"
       puts "  #{e.backtrace_locations.first}"
     end
 
@@ -54,10 +40,15 @@ module SystemdServiceCheck
 
     private
 
+    def format_option_validate
+      %w[t table j json a awesome_print].include? options[:format]
+    end
+
     def disp
-      if    options[:json]    then disp_json
-      elsif options[:awesome] then disp_ap
-      else                         disp_table
+      case options[:format]
+      when 't', 'table'         then disp_table
+      when 'j', 'json'          then disp_json
+      when 'a', 'awesome_print' then disp_ap
       end
     end
 
