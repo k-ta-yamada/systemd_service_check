@@ -1,15 +1,6 @@
-# frozen_string_literal: true
-
 source "https://rubygems.org"
 
 git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
-gem 'net-ssh'
-
-gem 'awesome_print'
-gem 'pry'
-gem 'pry-doc'
-gem 'pry-theme'
-gem 'rubocop'
-gem 'table_print'
-gem 'thor'
+# Specify your gem's dependencies in systemd_service_check.gemspec
+gemspec

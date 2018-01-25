@@ -1,18 +1,26 @@
 inherit_from: .rubocop_todo.yml
+
+AllCops:
+  TargetRubyVersion: 2.5
+  Exclude:
+    - Vagrantfile
+    - vendor/**/*
+
 Style/AsciiComments:
   Enabled: false
 
-Metrics/LineLength:
-  Max: 90
-Metrics/BlockLength:
+Style/FrozenStringLiteralComment:
   Enabled: false
 
 Style/StringLiterals:
   Enabled: false
+
 Style/StringLiteralsInInterpolation:
   Enabled: false
 
-AllCops:
-  Exclude:
-    - Vagrantfile
-    - vendor/**/*
+Metrics/LineLength:
+  Max: 90
+
+Metrics/BlockLength:
+  Enabled: false
+
