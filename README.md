@@ -66,14 +66,14 @@ check target ENV Servers.
 
 ```sh
 $ ssc check
-ENV | IP            | HOSTNAME | USER | SERVICE_NAME                                       | LOAD_STATE         | ACTIVE_STATE      | SUB_STATE
-----|---------------|----------|------|----------------------------------------------------|--------------------|-------------------|-----------------
-dev | 192.168.1.101 | centos7  | root | sshd.service                                       | loaded    | active   | running
-dev | 192.168.1.101 | centos7  | root | firewalld.service                                  | loaded    | inactive | dead
-dev | 192.168.1.101 | centos7  | root | dummy.service                                      | not-found | inactive | dead
-dev | 192.168.1.101 | centos7  | root | rsyslog.service                                    | loaded    | active   | running
-dev | 192.168.1.101 | centos7  | root | 12345678901234567890123456789012345678901234567890 | not-found | inactive | dead
-dev | 192.168.1.101 | centos7  | root | systemd-tmpfiles-clean.timer                       | loaded    | active   | waiting
+ENV | IP            | HOSTNAME | USER | SERVICE_NAME                                       | LOAD_STATE         | ACTIVE_STATE      | SUB_STATE        | UNIT_FILE_STATE   | TYPE
+----|---------------|----------|------|----------------------------------------------------|--------------------|-------------------|------------------|-------------------|-------
+dev | 192.168.1.101 | centos7  | root | sshd.service                                       | loaded    | active   | running | enabled  | notify
+dev | 192.168.1.101 | centos7  | root | firewalld.service                                  | loaded    | inactive | dead    | disabled | dbus
+dev | 192.168.1.101 | centos7  | root | dummy.service                                      | not-found | inactive | dead    | n/a      | n/a
+dev | 192.168.1.101 | centos7  | root | rsyslog.service                                    | loaded    | active   | running | enabled  | notify
+dev | 192.168.1.101 | centos7  | root | 12345678901234567890123456789012345678901234567890 | not-found | inactive | dead    | n/a      | n/a
+dev | 192.168.1.101 | centos7  | root | systemd-tmpfiles-clean.timer                       | loaded    | active   | waiting | static   | n/a
 ```
 
 ```sh
@@ -84,7 +84,14 @@ $ ssc check --format=json | jq
       "env": "dev",
       "ip": "192.168.1.101",
       "user": "root",
-      "pass": "vagrant",
+      "options": {
+        "keys": [
+          "./.vagrant/machines/centos7/virtualbox/private_key"
+        ],
+        "logger": "#<Logger:0x00007fc72016bc20>",
+        "password_prompt": "#<Net::SSH::Prompt:0x00007fc720169628>",
+        "user": "root"
+      },
       "services": [
         "sshd.service",
         "firewalld.service",
@@ -100,37 +107,49 @@ $ ssc check --format=json | jq
         "service_name": "sshd.service",
         "load_state": "loaded",
         "active_state": "active",
-        "sub_state": "running"
+        "sub_state": "running",
+        "unit_file_state": "enabled",
+        "type": "notify"
       },
       {
         "service_name": "firewalld.service",
         "load_state": "loaded",
         "active_state": "inactive",
-        "sub_state": "dead"
+        "sub_state": "dead",
+        "unit_file_state": "disabled",
+        "type": "dbus"
       },
       {
         "service_name": "dummy.service",
         "load_state": "not-found",
         "active_state": "inactive",
-        "sub_state": "dead"
+        "sub_state": "dead",
+        "unit_file_state": "n/a",
+        "type": "n/a"
       },
       {
         "service_name": "rsyslog.service",
         "load_state": "loaded",
         "active_state": "active",
-        "sub_state": "running"
+        "sub_state": "running",
+        "unit_file_state": "enabled",
+        "type": "notify"
       },
       {
         "service_name": "12345678901234567890123456789012345678901234567890",
         "load_state": "not-found",
         "active_state": "inactive",
-        "sub_state": "dead"
+        "sub_state": "dead",
+        "unit_file_state": "n/a",
+        "type": "n/a"
       },
       {
         "service_name": "systemd-tmpfiles-clean.timer",
         "load_state": "loaded",
         "active_state": "active",
-        "sub_state": "waiting"
+        "sub_state": "waiting",
+        "unit_file_state": "static",
+        "type": "n/a"
       }
     ]
   }
@@ -140,12 +159,19 @@ $ ssc check --format=json | jq
 ```sh
 $ ssc check --format=awesome_print
 [
-    [0] #<Struct:SystemdServiceCheck::Base::Result:0x7fa4cec5aa10
-        server = #<Struct:SystemdServiceCheck::Base::Server:0x7fa4cdbfc088
+    [0] #<Struct:SystemdServiceCheck::Base::Result:0x7f8662bca418
+        server = #<Struct:SystemdServiceCheck::Base::Server:0x7f8662a543b8
             env = "dev",
             hostname = "centos7",
             ip = "192.168.1.101",
-            pass = "vagrant",
+            options = {
+                           :keys => [
+                    [0] "./.vagrant/machines/centos7/virtualbox/private_key"
+                ],
+                         :logger => #<Logger:0x00007f8662a5e0c0 @level=4, @progname=nil, @default_formatter=#<Logger::Formatter:0x00007f8662a5df30 @datetime_format=nil>, @formatter=nil, @logdev=#<Logger::LogDevice:0x00007f8662a5deb8 @shift_period_suffix=nil, @shift_size=nil, @shift_age=nil, @filename=nil, @dev=#<IO:<STDERR>>, @mon_owner=nil, @mon_count=0, @mon_mutex=#<Thread::Mutex:0x00007f8662a5dc60>>>,
+                :password_prompt => #<Net::SSH::Prompt:0x00007f8662a5dc38>,
+                           :user => "root"
+            },
             services = [
                 [0] "sshd.service",
                 [1] "firewalld.service",
@@ -157,41 +183,53 @@ $ ssc check --format=awesome_print
             user = "root"
         >,
         services = [
-            [0] #<Struct:SystemdServiceCheck::Base::Service:0x7fa4cf05a9a8
+            [0] #<Struct:SystemdServiceCheck::Base::Service:0x7f8662c08b28
                 active_state = "active",
                 load_state = "loaded",
                 service_name = "sshd.service",
-                sub_state = "running"
+                sub_state = "running",
+                type = "notify",
+                unit_file_state = "enabled"
             >,
-            [1] #<Struct:SystemdServiceCheck::Base::Service:0x7fa4cf049748
+            [1] #<Struct:SystemdServiceCheck::Base::Service:0x7f866346d3e0
                 active_state = "inactive",
                 load_state = "loaded",
                 service_name = "firewalld.service",
-                sub_state = "dead"
+                sub_state = "dead",
+                type = "dbus",
+                unit_file_state = "disabled"
             >,
-            [2] #<Struct:SystemdServiceCheck::Base::Service:0x7fa4cdb534d8
+            [2] #<Struct:SystemdServiceCheck::Base::Service:0x7f8663866230
                 active_state = "inactive",
                 load_state = "not-found",
                 service_name = "dummy.service",
-                sub_state = "dead"
+                sub_state = "dead",
+                type = "n/a",
+                unit_file_state = "n/a"
             >,
-            [3] #<Struct:SystemdServiceCheck::Base::Service:0x7fa4cdb497a8
+            [3] #<Struct:SystemdServiceCheck::Base::Service:0x7f86634572c0
                 active_state = "active",
                 load_state = "loaded",
                 service_name = "rsyslog.service",
-                sub_state = "running"
+                sub_state = "running",
+                type = "notify",
+                unit_file_state = "enabled"
             >,
-            [4] #<Struct:SystemdServiceCheck::Base::Service:0x7fa4cec7a180
+            [4] #<Struct:SystemdServiceCheck::Base::Service:0x7f8662be8c88
                 active_state = "inactive",
                 load_state = "not-found",
                 service_name = "12345678901234567890123456789012345678901234567890",
-                sub_state = "dead"
+                sub_state = "dead",
+                type = "n/a",
+                unit_file_state = "n/a"
             >,
-            [5] #<Struct:SystemdServiceCheck::Base::Service:0x7fa4cec5ad80
+            [5] #<Struct:SystemdServiceCheck::Base::Service:0x7f8662bca8f0
                 active_state = "active",
                 load_state = "loaded",
                 service_name = "systemd-tmpfiles-clean.timer",
-                sub_state = "waiting"
+                sub_state = "waiting",
+                type = "n/a",
+                unit_file_state = "static"
             >
         ]
     >
