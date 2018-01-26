@@ -60,7 +60,7 @@ module SystemdServiceCheck
       ap @ssc.results
     end
 
-    COLS = %i[env ip hostname user service_name load_state active_state sub_state].freeze
+    COLS = %i[env ip hostname user service_name load_state active_state sub_state unit_file_state type].freeze
     def disp_table # rubocop:disable Metrics/AbcSize
       service_name_width =
         @ssc.results.map(&:services).flatten.map(&:service_name).map(&:size).max
@@ -70,6 +70,7 @@ module SystemdServiceCheck
         data = services.map { |s| result.server.to_h.merge(s.to_h) }
 
         tp(data, COLS, service_name: { width: service_name_width })
+        puts
       end
     end
 
@@ -77,9 +78,11 @@ module SystemdServiceCheck
       services.map do |s|
         s.class.new(
           s.service_name,
-          color_state(s.load_state,   :==, "loaded"),
-          color_state(s.active_state, :==, "active"),
-          color_state(s.sub_state,    :!=, "dead")
+          color_state(s.load_state,      :==, "loaded"),
+          color_state(s.active_state,    :==, "active"),
+          color_state(s.sub_state,       :!=, "dead"),
+          color_state(s.unit_file_state, :==, "enabled"),
+          s.type
         )
       end
     end

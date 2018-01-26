@@ -12,12 +12,12 @@ module SystemdServiceCheck
     class InvalidOption < StandardError; end
 
     Server  = Struct.new(:env, :ip, :user, :options, :services, :hostname)
-    Service = Struct.new(:service_name, :load_state, :active_state, :sub_state)
+    Service = Struct.new(*%i[service_name load_state active_state sub_state unit_file_state type])
     Result  = Struct.new(:server, :services)
 
     ENVS      = %w[dev stg prd].freeze
     # TODO: systemctl show -p
-    STATES    = %w[LoadState ActiveState SubState].freeze
+    STATES    = %w[LoadState ActiveState SubState UnitFileState Type].freeze
     # TODO: setting by yaml
     SHOW_GREP = /env/i
 
@@ -99,7 +99,9 @@ module SystemdServiceCheck
         service_name,
         states[:load_state],
         states[:active_state],
-        states[:sub_state]
+        states[:sub_state],
+        states[:unit_file_state] || "n/a",
+        states[:type] || "n/a"
       )
     end
   end
