@@ -12,19 +12,19 @@ module SystemdServiceCheck
     class InvalidOption < StandardError; end
 
     Server  = Struct.new(:env, :ip, :user, :options, :services, :hostname)
-    Service = Struct.new(*%i[service_name load_state active_state sub_state unit_file_state type])
+    Service = Struct.new(:service_name, :load_state, :active_state, :sub_state, :unit_file_state, :type)
     Result  = Struct.new(:server, :services)
 
-    ENVS      = %w[dev stg prd].freeze
     # TODO: systemctl show -p
     STATES    = %w[LoadState ActiveState SubState UnitFileState Type].freeze
     # TODO: setting by yaml
     SHOW_GREP = /env/i
 
-    attr_reader :argv, :servers, :target_env, :target_servers, :results
+    attr_reader :argv, :env_names, :servers, :target_env, :target_servers, :results
 
     def initialize(argv: nil, yaml: nil)
       @argv           = argv || []
+      @env_names      = []
       @servers        = []
       @target_env     = []
       @target_servers = []
@@ -49,6 +49,7 @@ module SystemdServiceCheck
 
     def load_settings(filename) # rubocop:disable Metrics/AbcSize
       yaml = YAML.load_file(filename(filename))
+      @env_names = yaml[:servers].map { |s| s[:env] }.uniq
       @servers = yaml[:servers].map do |s|
         raise InvalidOption, "ENV: #{s[:env]}" if [s[:password], s[:key]].all?(nil)
         options = { password: s[:password],
@@ -71,11 +72,13 @@ module SystemdServiceCheck
     end
 
     def configure_target_env
-      @target_env = %w[dev stg prd] & @argv
-      # If there is no argument, only `dev` is targeted
-      @target_env = %w[dev] if @target_env.empty? && @argv.empty?
-      # If there is only one argument and it is `all`, it targets all (dev, stg, prd)
-      @target_env = ENVS if @argv.size == 1 && argv.first == 'all'
+      @target_env = @env_names & @argv
+
+      # If there is no argument.
+      @target_env = @env_names.first if @target_env.empty? && @argv.empty?
+
+      # If there is only one argument and it is `all`.
+      @target_env = @env_names if @argv.size == 1 && argv.first == 'all'
     end
 
     def ssh(server)
