@@ -29,7 +29,7 @@ module SystemdServiceCheck
       @ssc = Base.new(argv: env, yaml: options[:yaml])
       disp
     rescue InvalidFormatOption => e
-      puts "<#{e}>: [#{options[:format]}] is invalid value}"
+      puts "<#{e}>: [#{options[:format]}] is invalid value."
       puts "  #{e.backtrace_locations.first}"
     end
 
