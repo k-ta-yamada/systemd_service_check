@@ -9,7 +9,9 @@ require 'pry' # forDebug
 module SystemdServiceCheck
   # Base
   class Base
-    Server  = Struct.new(:env, :ip, :user, :pass, :services, :hostname)
+    class InvalidOption < StandardError; end
+
+    Server  = Struct.new(:env, :ip, :user, :options, :services, :hostname)
     Service = Struct.new(:service_name, :load_state, :active_state, :sub_state)
     Result  = Struct.new(:server, :services)
 
@@ -22,11 +24,11 @@ module SystemdServiceCheck
     attr_reader :argv, :servers, :target_env, :target_servers, :results
 
     def initialize(argv: nil, yaml: nil)
-      @argv     = argv || []
-      @servers  = []
+      @argv           = argv || []
+      @servers        = []
       @target_env     = []
       @target_servers = []
-      @results = []
+      @results        = []
       load_settings(yaml)
       configure_target_servers
       run
@@ -45,9 +47,14 @@ module SystemdServiceCheck
 
     private
 
-    def load_settings(filename)
+    def load_settings(filename) # rubocop:disable Metrics/AbcSize
       yaml = YAML.load_file(filename(filename))
-      @servers = yaml[:servers].map { |s| Server.new(*s.values) }
+      @servers = yaml[:servers].map do |s|
+        raise InvalidOption, "ENV: #{s[:env]}" if [s[:password], s[:key]].all?(nil)
+        options = { password: s[:password],
+                    keys:     [s[:key] || ""] }
+        Server.new(s[:env], s[:ip], s[:user], options, s[:services], s[:hostname])
+      end
     end
 
     def filename(filename)
@@ -73,10 +80,9 @@ module SystemdServiceCheck
 
     def ssh(server)
       services = []
-      Net::SSH.start(server[:ip], server[:user], password: server[:pass]) do |ssh|
+      Net::SSH.start(server[:ip], server[:user], server[:options]) do |ssh|
         server[:hostname] = ssh.exec!('hostname').chop
         services = server[:services].map { |service_name| systemd(ssh, service_name) }
-
         # TODO: store in Result object
         # puts ssh.exec!("systemctl list-timers")
       end

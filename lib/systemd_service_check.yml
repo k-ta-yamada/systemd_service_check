@@ -12,15 +12,18 @@
   - :env:  dev
     :ip:   192.168.1.101
     :user: root
-    :pass: vagrant
+    # :password: vagrant
+    :key: ./.vagrant/machines/centos7/virtualbox/private_key
     :services: *default_services
   - :env:  stg
-    :ip:   centos7
+    :ip:   192.168.1.101
     :user: root
-    :pass: vagrant
+    :password: vagrant
+    # :key: ./.vagrant/machines/centos7/virtualbox/private_key
     :services: *default_services
-  - :env:  prd
-    :ip:   centos7
+  - :services: *default_services
+    :key: ./.vagrant/machines/centos7/virtualbox/private_key
+    :password: invalid-password
     :user: root
-    :pass: vagrant
-    :services: *default_services
+    :ip:   192.168.1.101
+    :env:  prd
