@@ -4,7 +4,7 @@
   - firewalld.service
   - dummy.service
   - rsyslog.service
-  - "12345678901234567890123456789012345678901234567890"
+  - long_name_size_40_______________________
   - systemd-tmpfiles-clean.timer
 
 # SERVERS TO BE CHECKED
