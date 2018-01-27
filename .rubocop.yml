@@ -5,6 +5,7 @@ AllCops:
   Exclude:
     - Vagrantfile
     - vendor/**/*
+    - lib/table_print-patch-pr70/*
 
 Style/AsciiComments:
   Enabled: false

@@ -4,6 +4,12 @@ require 'awesome_print'
 require 'table_print'
 require 'pry' # forDebug
 
+# ###############################################################################
+# MEMO: This patch is a copy of https://github.com/arches/table_print/pull/70
+# ###############################################################################
+require 'table_print-patch-pr70/column'
+require 'table_print-patch-pr70/formatter'
+
 module SystemdServiceCheck
   # CLI
   class CLI < Thor
