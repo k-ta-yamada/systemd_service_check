@@ -1,8 +1,8 @@
 require 'net/ssh'
+require 'thor'
+
 require 'yaml'
 require 'json'
-require 'active_support'
-require 'active_support/core_ext/string'
 require 'pry' # forDebug
 
 # SystemdServiceCheck
@@ -96,7 +96,8 @@ module SystemdServiceCheck
       states = ssh.exec!("systemctl show #{service_name} -p #{STATES.join(",")}")
                   .split("\n")
                   .map { |v| v.split("=") }
-                  .each_with_object({}) { |(k, v), memo| memo[k.underscore.to_sym] = v }
+                  .map { |v| [Thor::Util.snake_case(v[0]).to_sym, v[1]] }
+                  .each_with_object({}) { |(k, v), memo| memo[k] = v }
 
       Service.new(
         service_name,

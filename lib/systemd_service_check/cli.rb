@@ -2,7 +2,6 @@ require 'systemd_service_check'
 require 'thor'
 require 'awesome_print'
 require 'table_print'
-require 'highline'
 require 'pry' # forDebug
 
 module SystemdServiceCheck
@@ -72,6 +71,12 @@ module SystemdServiceCheck
         tp(data, COLS, service_name: { width: service_name_width })
         puts
       end
+
+      # ref: https://github.com/erikhuda/thor/blob/master/lib/thor/shell.rb#L14
+      if RbConfig::CONFIG["host_os"] =~ /mswin|mingw/ && !ENV["ANSICON"]
+        puts "-- For colors on windows, please setup `ANSICON`.",
+             "-- ANSICON: https://github.com/adoxa/ansicon"
+      end
     end
 
     def decorate_ansi_color(services)
@@ -89,7 +94,7 @@ module SystemdServiceCheck
 
     def color_state(obj, method, arg)
       green_or_red = obj.send(method, arg) ? :green : :red
-      HighLine.color(obj, green_or_red)
+      set_color(obj, green_or_red)
     end
   end
 end

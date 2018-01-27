@@ -42,9 +42,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pry-theme'
   spec.add_development_dependency 'rubocop'
 
-  spec.add_dependency 'activesupport'
   spec.add_dependency 'awesome_print'
-  spec.add_dependency 'highline'
   spec.add_dependency 'net-ssh'
   spec.add_dependency 'pry'
   spec.add_dependency 'table_print'
