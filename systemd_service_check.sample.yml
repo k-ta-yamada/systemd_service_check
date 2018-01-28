@@ -1,0 +1,32 @@
+# SERVICES TO BE CHECKED [Array]
+services: &default_services
+  - sshd.service
+  - firewalld.service
+  - rsyslog.service
+  - network.service
+  - systemd-tmpfiles-clean.timer
+  - dummy_long_name_size_30_______
+
+# SERVERS TO BE CHECKED [Array of Hash]
+servers:
+  # only password
+  - env:      dev
+    ip:       192.168.1.101
+    user:     root
+    password: vagrant
+    # key:      ./.vagrant/machines/centos7/virtualbox/private_key
+    services: *default_services
+  # only private key
+  - env:      stg
+    ip:       192.168.1.101
+    user:     root
+    # password: vagrant
+    key:      ./.vagrant/machines/centos7/virtualbox/private_key
+    services: *default_services
+  # password and private key (private key will be used preferentially)
+  - env:      prd
+    ip:       192.168.1.101
+    user:     root
+    password: invalid-dummy-password
+    key:      ./.vagrant/machines/centos7/virtualbox/private_key
+    services: *default_services
