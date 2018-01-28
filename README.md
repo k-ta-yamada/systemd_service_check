@@ -62,9 +62,10 @@ Usage:
   ssc check ENV [ENV...] options
 
 Options:
-  -f, [--format=table]                      # [t]able, [j]son, [a]wesome_print
-                                            # Default: table
-  -y, [--yaml=./systemd_service_check.yml]  # setting yaml file
+  -f, [--format=table]                             # [t]able, [j]son, [a]wesome_print
+                                                   # Default: table
+  -y, [--yaml=./systemd_service_check.sample.yml]  # setting yaml file
+                                                   # Default: ./systemd_service_check.sample.yml
 
 check target ENV Servers.
 ```
