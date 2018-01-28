@@ -9,12 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["k-ta-yamada"]
   spec.email         = ["key.luvless@gmail.com"]
 
-  spec.summary       =
-    'This gem provide `ssc` command to check multiple `systemd service` \
-    etc on multiple remote servers using net-ssh.'
-  spec.description   =
-    'This gem provide `ssc` command to check multiple `systemd service` \
-    etc on multiple remote servers using net-ssh.'
+  spec.summary       = 'This gem provide `ssc` command to check multiple `systemd service` etc on multiple remote servers using net-ssh.'
+  spec.description   = 'This gem provide `ssc` command to check multiple `systemd service` etc on multiple remote servers using net-ssh.'
   spec.homepage      = "https://github.com/k-ta-yamada/systemd_service_check"
   spec.license       = "MIT"
 
