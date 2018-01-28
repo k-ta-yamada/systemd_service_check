@@ -25,16 +25,17 @@ module SystemdServiceCheck
            type:    :string,
            aliases: '-y',
            desc:    'setting yaml file',
-           banner:  './systemd_service_check.yml'
-    # default: '../../lib/sample.yml'
+           banner:  './systemd_service_check.sample.yml',
+           default: './systemd_service_check.sample.yml'
 
     desc "check ENV [ENV...] options", "check target ENV Servers."
     def check(*env)
       raise InvalidFormatOption unless format_option_validate
-      @ssc = Base.new(argv: env, yaml: options[:yaml])
+      @ssc = Base.new(env, options[:yaml])
       disp
     rescue InvalidFormatOption => e
-      puts "<#{e}>: [#{options[:format]}] is invalid value."
+      puts "<#{e}>",
+           "  [#{options[:format]}] is invalid value."
       puts "  #{e.backtrace_locations.first}"
     end
 

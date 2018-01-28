@@ -1,6 +1,5 @@
 require 'net/ssh'
 require 'thor'
-
 require 'yaml'
 require 'json'
 require 'pry' # forDebug
@@ -22,16 +21,23 @@ module SystemdServiceCheck
 
     attr_reader :argv, :env_names, :servers, :target_env, :target_servers, :results
 
-    def initialize(argv: nil, yaml: nil)
+    def initialize(argv, yaml)
       @argv           = argv || []
       @env_names      = []
       @servers        = []
       @target_env     = []
       @target_servers = []
       @results        = []
+
+      raise InvalidOption if yaml.nil? || yaml.empty?
       load_settings(yaml)
       configure_target_servers
       run
+    rescue InvalidOption => e
+      puts "<#{e}>",
+           "  Argument yaml must not be nil or empty.",
+           "  yaml.class: [#{yaml.class}]"
+      puts "  #{e.backtrace_locations.first}"
     end
 
     def run
@@ -47,22 +53,14 @@ module SystemdServiceCheck
 
     private
 
-    def load_settings(filename) # rubocop:disable Metrics/AbcSize
-      yaml = YAML.load_file(filename(filename))
+    def load_settings(file) # rubocop:disable Metrics/AbcSize
+      yaml = JSON.parse(YAML.load_file(File.expand_path(file)).to_json,
+                        symbolize_names: true)
       @env_names = yaml[:servers].map { |s| s[:env] }.uniq
-      @servers = yaml[:servers].map do |s|
+      @servers   = yaml[:servers].map do |s|
         raise InvalidOption, "ENV: #{s[:env]}" if [s[:password], s[:key]].all?(nil)
-        options = { password: s[:password],
-                    keys:     [s[:key] || ""] }
-        Server.new(s[:env], s[:ip], s[:user], options, s[:services], s[:hostname])
-      end
-    end
-
-    def filename(filename)
-      if filename.nil?
-        File.expand_path('../../systemd_service_check.yml', __FILE__)
-      else
-        File.expand_path(filename)
+        options = { password: s[:password], keys: [s[:key] || ""] }
+        Server.new(s[:env], s[:ip], s[:user], options, s[:services])
       end
     end
 
