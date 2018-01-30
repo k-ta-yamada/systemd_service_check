@@ -1,8 +1,4 @@
 require 'systemd_service_check'
-require 'thor'
-require 'awesome_print'
-require 'table_print'
-require 'pry' # forDebug
 
 # ###############################################################################
 # MEMO: This patch is a copy of https://github.com/arches/table_print/pull/70
