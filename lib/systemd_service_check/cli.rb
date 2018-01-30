@@ -9,7 +9,7 @@ require 'table_print-patch-pr70/formatter'
 module SystemdServiceCheck
   # CLI
   class CLI < Thor
-    class InvalidFormatOption < StandardError; end
+    class InvalidFormatOptionError < StandardError; end
 
     option :format,
            type:    :string,
@@ -26,10 +26,11 @@ module SystemdServiceCheck
 
     desc "check ENV [ENV...] options", "check target ENV Servers."
     def check(*env)
-      raise InvalidFormatOption unless format_option_validate
+      raise InvalidFormatOptionError unless format_option_validate
       @ssc = Base.new(env, options[:yaml])
+      @ssc.run
       disp
-    rescue InvalidFormatOption => e
+    rescue InvalidFormatOptionError => e
       puts "<#{e}>",
            "  [#{options[:format]}] is invalid value."
       puts "  #{e.backtrace_locations.first}"
@@ -62,8 +63,10 @@ module SystemdServiceCheck
       ap @ssc.results
     end
 
-    COLS = %i[env ip hostname user service_name load_state active_state sub_state unit_file_state type].freeze
-    def disp_table # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/LineLength
+    COLS = %i[env ip hostname user service_name].concat(SystemdServiceCheck.property_to_sym).freeze
+    # rubocop:enable Metrics/LineLength
+    def disp_table # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       service_name_width =
         @ssc.results.map(&:services).flatten.map(&:service_name).map(&:size).max
 
@@ -76,10 +79,12 @@ module SystemdServiceCheck
       end
 
       # ref: https://github.com/erikhuda/thor/blob/master/lib/thor/shell.rb#L14
+      # rubocop:disable Style/GuardClause
       if RbConfig::CONFIG["host_os"] =~ /mswin|mingw/ && !ENV["ANSICON"]
         puts "-- For colors on windows, please setup `ANSICON`.",
              "-- ANSICON: https://github.com/adoxa/ansicon"
       end
+      # rubocop:enable Style/GuardClause
     end
 
     def decorate_ansi_color(services)
