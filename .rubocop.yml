@@ -3,6 +3,7 @@ inherit_from: .rubocop_todo.yml
 AllCops:
   TargetRubyVersion: 2.5
   Exclude:
+    - systemd_service_check.gemspec
     - Vagrantfile
     - vendor/**/*
     - lib/table_print-patch-pr70/*

@@ -1,0 +1,21 @@
+services: &default_services
+  - sshd.service
+  - rsyslog.service
+
+servers:
+  - env:      dev
+    ip:       192.168.1.101
+    user:     root
+    password: vagrant
+    services: *default_services
+  - env:      stg
+    ip:       192.168.1.101
+    user:     root
+    key:      ./.vagrant/machines/centos7/virtualbox/private_key
+    services: *default_services
+  - env:      prd
+    ip:       192.168.1.101
+    user:     root
+    password: invalid-dummy-password
+    key:      ./.vagrant/machines/centos7/virtualbox/private_key
+    services: *default_services
