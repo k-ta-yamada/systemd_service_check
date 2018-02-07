@@ -1,5 +1,4 @@
 require_relative "../test_helper"
-require 'net/ssh/test'
 
 module SystemdServiceCheck
   class SSHTest < Minitest::Test
@@ -8,24 +7,24 @@ module SystemdServiceCheck
     # rubocop:disable Metrics/MethodLength:
     def setup
       @systemctl_show_sshd =
-        "systemctl show sshd.service --property #{PROPERTY.join(",")}"
+        "systemctl show sshd.service -p #{Utils::PROPERTY.join(",")}"
       @systemctl_show_rsyslog =
-        "systemctl show rsyslog.service --property #{PROPERTY.join(",")}"
+        "systemctl show rsyslog.service -p #{Utils::PROPERTY.join(",")}"
 
       @property_vals = %w[loaded active running enabled notify]
       @retval_systemctl_show =
-        PROPERTY.zip(@property_vals).map { |kv| kv.join("=") }.join("\n")
+        Utils::PROPERTY.zip(@property_vals).map { |kv| kv.join("=") }.join("\n")
       @retval_hostname = "centos7\n"
 
       options = { password: 'pass' }
       services = %w[sshd.service rsyslog.service]
-      @server = Base::Server.new('test', '127.0.0.1', 'root', options, services)
+      @server = Utils::Server.new('test', nil, '127.0.0.1', 'root', options, services)
       services = ['sshd.service', 'rsyslog.service'].map do |s|
         # rubocop:disable Lint/UnneededSplatExpansion
-        SSH::Service.new(s, *%w[loaded active running enabled notify])
+        Utils::Service.new(s, *%w[loaded active running enabled notify])
         # rubocop:enable Lint/UnneededSplatExpansion
       end
-      @result = SSH::Result.new(@server, services)
+      @result = Utils::Result.new(@server, services)
     end
     # rubocop:enable Metrics/MethodLength:
 
@@ -59,7 +58,7 @@ module SystemdServiceCheck
       ssh_mock = Minitest::Mock.new
       ssh_mock.expect(:exec!, @retval_systemctl_show, [@systemctl_show_sshd])
 
-      exp = Service.new(*@property_vals.unshift('sshd.service'))
+      exp = Utils::Service.new(*@property_vals.unshift('sshd.service'))
       act = systemctl_show(ssh_mock, 'sshd.service')
       assert_equal exp, act
       ssh_mock.verify

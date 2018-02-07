@@ -6,27 +6,63 @@ services: &default_services
   - network.service
   - systemd-tmpfiles-clean.timer
   - dummy_long_name_size_30_______
+ap_services: &ap_services
+  - sshd.service
+  - nginx.service
+db_services: &db_services
+  - sshd.service
+  - postgresql.service
+  - pgpool.service
 
 # SERVERS TO BE CHECKED [Array of Hash]
 servers:
-  # only password
   - env:      dev
+    # role:     ap
     ip:       192.168.1.101
     user:     root
+    # only password
     password: vagrant
     # key:      ./.vagrant/machines/centos7/virtualbox/private_key
     services: *default_services
-  # only private key
-  - env:      stg
+  - env:      dev
+    role:     ap # This value is specified by the `--role` option
     ip:       192.168.1.101
     user:     root
+    # only private key
     # password: vagrant
     key:      ./.vagrant/machines/centos7/virtualbox/private_key
-    services: *default_services
-  # password and private key (private key will be used preferentially)
-  - env:      prd
+    services: *ap_services
+  - env:      dev
+    role:     db
     ip:       192.168.1.101
     user:     root
+    # password and private key (private key will be used preferentially)
     password: invalid-dummy-password
     key:      ./.vagrant/machines/centos7/virtualbox/private_key
-    services: *default_services
+    services: *db_services
+
+  - env:      stg
+    role:     ap
+    ip:       192.168.1.101
+    user:     root
+    password: vagrant
+    services: *ap_services
+  - env:      stg
+    role:     db
+    ip:       192.168.1.101
+    user:     root
+    password: vagrant
+    services: *db_services
+
+  - env:      prd
+    role:     ap
+    ip:       192.168.1.101
+    user:     root
+    password: vagrant
+    services: *ap_services
+  - env:      prd
+    role:     db
+    ip:       192.168.1.101
+    user:     root
+    password: vagrant
+    services: *db_services
