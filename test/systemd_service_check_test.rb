@@ -25,10 +25,6 @@ class SystemdServiceCheckTest < Minitest::Test
       @retval_systemctl_show =
         SystemdServiceCheck::PROPERTY.zip(@property_vals).map { |kv| kv.join("=") }.join("\n")
       @retval_hostname = "centos7\n"
-      # rubocop:disable Security/MarshalLoad, Metrics/LineLength
-      @result = Marshal.load(File.read(File.expand_path('./systemd_service_check/result.dump', File.dirname(__FILE__))))
-      @server = Marshal.load(File.read(File.expand_path('./systemd_service_check/server.dump', File.dirname(__FILE__))))
-      # rubocop:enable Security/MarshalLoad, Metrics/LineLength
     end
 
     def test_init_error
@@ -39,18 +35,6 @@ class SystemdServiceCheckTest < Minitest::Test
       assert_raises SystemdServiceCheck::Base::InvalidOptionError do
         SystemdServiceCheck::Base.new(nil, "")
       end
-      # binding.pry
-      # ssh_mock = Minitest::Mock.new
-      # ssh_mock.expect(:exec!, @retval_hostname, ["hostname"])
-      # ssh_mock.expect(:exec!, @retval_systemctl_show, [@systemctl_show_sshd])
-      # ssh_mock.expect(:exec!, @retval_systemctl_show, [@systemctl_show_rsyslog])
-      # Net::SSH.stub(:start, @server, ssh_mock) do
-      #   # assert_equal @result, ssh(@server)
-      #   ssc = SystemdServiceCheck::Base.new([], @yaml)
-      #   # ssc
-      #   assert ssc
-      # end
-      # ssh_mock.verify
     end
 
     def test_configure_target_envs

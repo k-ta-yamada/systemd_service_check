@@ -16,10 +16,11 @@ module SystemdServiceCheck
         PROPERTY.zip(@property_vals).map { |kv| kv.join("=") }.join("\n")
       @retval_hostname = "centos7\n"
 
-      # rubocop:disable Security/MarshalLoad, Metrics/LineLength
-      @result = Marshal.load(File.read(File.expand_path('./result.dump', File.dirname(__FILE__))))
-      @server = Marshal.load(File.read(File.expand_path('./server.dump', File.dirname(__FILE__))))
-      # rubocop:enable Security/MarshalLoad, Metrics/LineLength
+      @server = Base::Server.new('test', '127.0.0.1', 'root', { password: 'pass'}, ['sshd.service', 'rsyslog.service'])
+      services = ['sshd.service', 'rsyslog.service'].map do |s|
+        SSH::Service.new(s, *%w[loaded active running enabled notify])
+      end
+      @result = SSH::Result.new(@server, services)
     end
 
     def test_ssh

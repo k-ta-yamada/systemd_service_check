@@ -1,1 +1,0 @@
-S:&SystemdServiceCheck::Base::Server:envI"	test:ET:ipI"127.0.0.1;T:	userI"	root;T:options{:passwordI"password;T:services[I"sshd.service;TI"rsyslog.service;T:hostname0
