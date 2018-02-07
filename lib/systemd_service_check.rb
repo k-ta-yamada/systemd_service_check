@@ -34,7 +34,7 @@ module SystemdServiceCheck
     attr_reader :argv, :servers, :target_env, :target_servers, :results
 
     def initialize(argv, yaml)
-      raise InvalidOptionError, "Argument `yaml` must not be nil or empty." if yaml.nil? || yaml.empty?
+      raise InvalidOptionError, "Argument `yaml` must not be nil or empty." if blank? yaml
 
       @argv           = argv || []
       @servers        = servers_from(yaml)
@@ -52,6 +52,12 @@ module SystemdServiceCheck
         { server:   result.server.to_h,
           services: result.services.map(&:to_h) }
       end.to_json
+    end
+
+    private
+
+    def blank?(yaml)
+      yaml.nil? || yaml.empty?
     end
   end
 end

@@ -5,7 +5,8 @@ module SystemdServiceCheck
   class SSHTest < Minitest::Test
     include SystemdServiceCheck::SSH
 
-    def setup # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength:
+    def setup
       @systemctl_show_sshd =
         "systemctl show sshd.service --property #{PROPERTY.join(",")}"
       @systemctl_show_rsyslog =
@@ -16,12 +17,17 @@ module SystemdServiceCheck
         PROPERTY.zip(@property_vals).map { |kv| kv.join("=") }.join("\n")
       @retval_hostname = "centos7\n"
 
-      @server = Base::Server.new('test', '127.0.0.1', 'root', { password: 'pass'}, ['sshd.service', 'rsyslog.service'])
+      options = { password: 'pass' }
+      services = %w[sshd.service rsyslog.service]
+      @server = Base::Server.new('test', '127.0.0.1', 'root', options, services)
       services = ['sshd.service', 'rsyslog.service'].map do |s|
+        # rubocop:disable Lint/UnneededSplatExpansion
         SSH::Service.new(s, *%w[loaded active running enabled notify])
+        # rubocop:enable Lint/UnneededSplatExpansion
       end
       @result = SSH::Result.new(@server, services)
     end
+    # rubocop:enable Metrics/MethodLength:
 
     def test_ssh
       # ref: How to test a function that yields a block with Minitest and Rspec - Mix & Go
@@ -72,5 +78,5 @@ module SystemdServiceCheck
       act = send(:split_property, property)
       assert_equal exp, act
     end
-  end # of SSHTest
-end # of SystemdServiceCheck
+  end
+end

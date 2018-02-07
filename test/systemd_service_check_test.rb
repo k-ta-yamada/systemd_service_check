@@ -13,19 +13,19 @@ class SystemdServiceCheckTest < Minitest::Test
   end
 
   class BaseTest < Minitest::Test
+    # rubocop:disable Metrics/LineLength
     def setup
       @yaml = File.expand_path('../systemd_service_check.sample.yml', File.dirname(__FILE__))
 
-      @systemctl_show_sshd =
-      "systemctl show sshd.service --property #{SystemdServiceCheck::PROPERTY.join(",")}"
-      @systemctl_show_rsyslog =
-        "systemctl show rsyslog.service --property #{SystemdServiceCheck::PROPERTY.join(",")}"
+      @systemctl_show_sshd    = "systemctl show sshd.service --property #{SystemdServiceCheck::PROPERTY.join(",")}"
+      @systemctl_show_rsyslog = "systemctl show rsyslog.service --property #{SystemdServiceCheck::PROPERTY.join(",")}"
 
       @property_vals = %w[loaded active running enabled notify]
       @retval_systemctl_show =
         SystemdServiceCheck::PROPERTY.zip(@property_vals).map { |kv| kv.join("=") }.join("\n")
       @retval_hostname = "centos7\n"
     end
+    # rubocop:enable Metrics/LineLength
 
     def test_init_error
       # skip

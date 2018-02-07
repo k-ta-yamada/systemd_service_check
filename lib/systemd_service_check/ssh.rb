@@ -17,10 +17,10 @@ module SystemdServiceCheck
     # @return [Result]
     def ssh(server)
       services = []
-      # Net::SSH.start(server[:ip], server[:user], server[:options]) do |ssh|
       Net::SSH.start(*server.conn_info) do |ssh|
         server[:hostname] = hostname(ssh)
-        services = server[:services].map { |service_name| systemctl_show(ssh, service_name) }
+        services =
+          server[:services].map { |service_name| systemctl_show(ssh, service_name) }
         # TODO: store in Result object
         # puts ssh.exec!("systemctl list-timers")
       end
@@ -51,6 +51,5 @@ module SystemdServiceCheck
 
       SystemdServiceCheck.property_to_sym.map { |k| ret[k] }
     end
-
   end
 end
