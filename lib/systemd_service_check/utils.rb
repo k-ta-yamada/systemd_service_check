@@ -24,7 +24,7 @@ module SystemdServiceCheck
       yaml = JSON.parse(YAML.load_file(yaml_filename).to_json, symbolize_names: true)
 
       yaml[:servers].map do |s|
-        raise InvalidOptionError, "ENV: #{s[:env]}" if [s[:password], s[:key]].all?(nil)
+        raise InvalidOptionError, "ENV: #{s[:env]}" if [s[:password], s[:key]].all?(&:nil?) # rubocop:disable Metrics/LineLength
         options = { password: s[:password], keys: [s[:key] || ""] }
         Server.new(s[:env], s[:role], s[:ip], s[:user], options, s[:services])
       end

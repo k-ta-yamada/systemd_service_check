@@ -9,6 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["k-ta-yamada"]
   spec.email         = ["key.luvless@gmail.com"]
 
+  spec.required_ruby_version = '>= 2.3.0'
+
   spec.summary       = 'This gem provide `ssc` command to check multiple `systemd service` etc on multiple remote servers using net-ssh.'
   spec.description   = 'This gem provide `ssc` command to check multiple `systemd service` etc on multiple remote servers using net-ssh.'
   spec.homepage      = "https://github.com/k-ta-yamada/systemd_service_check"
@@ -36,7 +38,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "minitest", "~> 5.0"
   spec.add_development_dependency "rake", "~> 10.0"
 
-  # spec.add_development_dependency 'minitest-doc_reporter'
   spec.add_development_dependency 'minitest-reporters'
   spec.add_development_dependency 'pry-doc'
   spec.add_development_dependency 'pry-theme'
