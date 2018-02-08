@@ -32,12 +32,12 @@ module SystemdServiceCheck
       assert_equal 0, none_env.size
 
       all_role_of_dev = configure_target_servers(servers, %w[dev], nil)
+      assert(all_role_of_dev.all? { |v| v.is_a?(Server) })
       assert_equal 3, all_role_of_dev.size
-      assert all_role_of_dev.all?(Server)
 
       ap_roll_of_dev = configure_target_servers(servers, %w[dev], 'ap')
+      assert(ap_roll_of_dev.all? { |v| v.is_a?(Server) })
       assert_equal 1, ap_roll_of_dev.size
-      assert ap_roll_of_dev.all?(Server)
     end
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
   end
