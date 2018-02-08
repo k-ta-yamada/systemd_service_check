@@ -41,7 +41,10 @@ usage as CLI: `ssc check -y ./path/to/setting.yml`
 ```rb
 require 'systemd_service_check'
 
-ssc = SystemdServiceCheck::Base.new
+envs = ['dev', 'stg']
+yaml = './your_settings.yml'
+role = 'app'
+ssc = SystemdServiceCheck::Base.new(envs, yaml, role)
 
 puts ssc.to_json
 ```
@@ -51,36 +54,92 @@ puts ssc.to_json
 ```sh
 $ ssc help
 Commands:
-  ssc check ENV [ENV...] options  # check target ENV Servers.
-  ssc help [COMMAND]              # Describe available commands or one specific command
-  ssc version                     # return SystemdServiceCheck::VERSION
+  ssc check ENV [ENV...] [options]  # check target ENV Servers.
+  ssc help [COMMAND]                # Describe available commands or one specific command
+  ssc version                       # return SystemdServiceCheck::VERSION
 ```
 
 ```sh
 $ ssc help check
 Usage:
-  ssc check ENV [ENV...] options
+  ssc check [ENV [ENV...]] [options]
 
 Options:
-  -f, [--format=table]                             # [t]able, [j]son, [a]wesome_print
-                                                   # Default: table
-  -y, [--yaml=./systemd_service_check.sample.yml]  # setting yaml file
-                                                   # Default: ./systemd_service_check.sample.yml
+  -y, [--yaml=YAML]      # setting yaml file
+                         # Default: ./systemd_service_check.sample.yml
+  -r, [--role=ROLE]      # Target the specified role
+  -f, [--format=FORMAT]  # [t]able, [j]son, [a]wesome_print
+                         # Default: table
 
 check target ENV Servers.
+If `ENV` is omitted, the value of the first env of servers described in yaml is used.
+If `all` is specified for `ENV`, all ENVs are targeted.
 ```
 
 ```sh
 $ ssc check
-ENV | IP            | HOSTNAME | USER | SERVICE_NAME                   | LOAD_STATE | ACTIVE_STATE | SUB_STATE | UNIT_FILE_STATE | TYPE
-----|---------------|----------|------|--------------------------------|------------|--------------|-----------|-----------------|--------
-dev | 192.168.1.101 | centos7  | root | sshd.service                   | loaded     | active       | running   | enabled         | notify
-dev | 192.168.1.101 | centos7  | root | firewalld.service              | loaded     | inactive     | dead      | disabled        | dbus
-dev | 192.168.1.101 | centos7  | root | rsyslog.service                | loaded     | active       | running   | enabled         | notify
-dev | 192.168.1.101 | centos7  | root | network.service                | loaded     | active       | exited    | bad             | forking
-dev | 192.168.1.101 | centos7  | root | systemd-tmpfiles-clean.timer   | loaded     | active       | waiting   | static          | n/a
-dev | 192.168.1.101 | centos7  | root | dummy_long_name_size_30_______ | not-found  | inactive     | dead      | n/a             | n/a
+ENV | ROLE | IP            | HOSTNAME | USER | SERVICE_NAME                   | LOAD_STATE | ACTIVE_STATE | SUB_STATE | UNIT_FILE_STATE | TYPE
+----|------|---------------|----------|------|--------------------------------|------------|--------------|-----------|-----------------|--------
+dev |      | 192.168.1.101 | centos7  | root | sshd.service                   | loaded     | active       | running   | enabled         | notify
+dev |      | 192.168.1.101 | centos7  | root | firewalld.service              | loaded     | inactive     | dead      | disabled        | dbus
+dev |      | 192.168.1.101 | centos7  | root | rsyslog.service                | loaded     | active       | running   | enabled         | notify
+dev |      | 192.168.1.101 | centos7  | root | network.service                | loaded     | active       | exited    | bad             | forking
+dev |      | 192.168.1.101 | centos7  | root | systemd-tmpfiles-clean.timer   | loaded     | active       | waiting   | static          |
+dev |      | 192.168.1.101 | centos7  | root | dummy_long_name_size_30_______ | not-found  | inactive     | dead      |                 |
+
+ENV | ROLE | IP            | HOSTNAME | USER | SERVICE_NAME  | LOAD_STATE | ACTIVE_STATE | SUB_STATE | UNIT_FILE_STATE | TYPE
+----|------|---------------|----------|------|---------------|------------|--------------|-----------|-----------------|-------
+dev | ap   | 192.168.1.101 | centos7  | root | sshd.service  | loaded     | active       | running   | enabled         | notify
+dev | ap   | 192.168.1.101 | centos7  | root | nginx.service | not-found  | inactive     | dead      |                 |
+
+ENV | ROLE | IP            | HOSTNAME | USER | SERVICE_NAME       | LOAD_STATE | ACTIVE_STATE | SUB_STATE | UNIT_FILE_STATE | TYPE
+----|------|---------------|----------|------|--------------------|------------|--------------|-----------|-----------------|-------
+dev | db   | 192.168.1.101 | centos7  | root | sshd.service       | loaded     | active       | running   | enabled         | notify
+dev | db   | 192.168.1.101 | centos7  | root | postgresql.service | not-found  | inactive     | dead      |                 |
+dev | db   | 192.168.1.101 | centos7  | root | pgpool.service     | not-found  | inactive     | dead      |                 |
 ```
+
+#### role
+
+```sh
+$ ssc check --role ap
+ENV | ROLE | IP            | HOSTNAME | USER | SERVICE_NAME  | LOAD_STATE | ACTIVE_STATE | SUB_STATE | UNIT_FILE_STATE | TYPE
+----|------|---------------|----------|------|---------------|------------|--------------|-----------|-----------------|-------
+dev | ap   | 192.168.1.101 | centos7  | root | sshd.service  | loaded     | active       | running   | enabled         | notify
+dev | ap   | 192.168.1.101 | centos7  | root | nginx.service | not-found  | inactive     | dead      |                 |
+```
+
+```sh
+$ ssc check --role db
+ENV | ROLE | IP            | HOSTNAME | USER | SERVICE_NAME       | LOAD_STATE | ACTIVE_STATE | SUB_STATE | UNIT_FILE_STATE | TYPE
+----|------|---------------|----------|------|--------------------|------------|--------------|-----------|-----------------|-------
+dev | db   | 192.168.1.101 | centos7  | root | sshd.service       | loaded     | active       | running   | enabled         | notify
+dev | db   | 192.168.1.101 | centos7  | root | postgresql.service | not-found  | inactive     | dead      |                 |
+dev | db   | 192.168.1.101 | centos7  | root | pgpool.service     | not-found  | inactive     | dead      |                 |
+```
+
+```sh
+$ ssc check all --role db
+ENV | ROLE | IP            | HOSTNAME | USER | SERVICE_NAME       | LOAD_STATE | ACTIVE_STATE | SUB_STATE | UNIT_FILE_STATE | TYPE
+----|------|---------------|----------|------|--------------------|------------|--------------|-----------|-----------------|-------
+dev | db   | 192.168.1.101 | centos7  | root | sshd.service       | loaded     | active       | running   | enabled         | notify
+dev | db   | 192.168.1.101 | centos7  | root | postgresql.service | not-found  | inactive     | dead      |                 |
+dev | db   | 192.168.1.101 | centos7  | root | pgpool.service     | not-found  | inactive     | dead      |                 |
+
+ENV | ROLE | IP            | HOSTNAME | USER | SERVICE_NAME       | LOAD_STATE | ACTIVE_STATE | SUB_STATE | UNIT_FILE_STATE | TYPE
+----|------|---------------|----------|------|--------------------|------------|--------------|-----------|-----------------|-------
+stg | db   | 192.168.1.101 | centos7  | root | sshd.service       | loaded     | active       | running   | enabled         | notify
+stg | db   | 192.168.1.101 | centos7  | root | postgresql.service | not-found  | inactive     | dead      |                 |
+stg | db   | 192.168.1.101 | centos7  | root | pgpool.service     | not-found  | inactive     | dead      |                 |
+
+ENV | ROLE | IP            | HOSTNAME | USER | SERVICE_NAME       | LOAD_STATE | ACTIVE_STATE | SUB_STATE | UNIT_FILE_STATE | TYPE
+----|------|---------------|----------|------|--------------------|------------|--------------|-----------|-----------------|-------
+prd | db   | 192.168.1.101 | centos7  | root | sshd.service       | loaded     | active       | running   | enabled         | notify
+prd | db   | 192.168.1.101 | centos7  | root | postgresql.service | not-found  | inactive     | dead      |                 |
+prd | db   | 192.168.1.101 | centos7  | root | pgpool.service     | not-found  | inactive     | dead      |                 |
+```
+
+#### formatting sample
 
 ```sh
 $ ssc check --format=json | jq
@@ -88,6 +147,7 @@ $ ssc check --format=json | jq
   {
     "server": {
       "env": "dev",
+      "role": null,
       "ip": "192.168.1.101",
       "user": "root",
       "options": {
@@ -95,16 +155,13 @@ $ ssc check --format=json | jq
         "keys": [
           ""
         ],
-        "logger": "#<Logger:0x00007fa52293b0b0>",
-        "password_prompt": "#<Net::SSH::Prompt:0x00007fa52293aa70>",
+        "logger": "#<Logger:0x00007fba5bb2d730>",
+        "password_prompt": "#<Net::SSH::Prompt:0x00007fba5bb2d5a0>",
         "user": "root"
       },
       "services": [
         "sshd.service",
-        "firewalld.service",
-        "rsyslog.service",
-        "network.service",
-        "systemd-tmpfiles-clean.timer",
+        ...,
         "dummy_long_name_size_30_______"
       ],
       "hostname": "centos7"
@@ -118,45 +175,57 @@ $ ssc check --format=json | jq
         "unit_file_state": "enabled",
         "type": "notify"
       },
+      ...,
       {
-        "service_name": "firewalld.service",
-        "load_state": "loaded",
+        "service_name": "dummy_long_name_size_30_______",
+        "load_state": "not-found",
         "active_state": "inactive",
         "sub_state": "dead",
-        "unit_file_state": "disabled",
-        "type": "dbus"
+        "unit_file_state": null,
+        "type": null
+      }
+    ]
+  },
+  ...,
+  {
+    "server": {
+      "env": "dev",
+      "role": "db",
+      "ip": "192.168.1.101",
+      "user": "root",
+      "options": {
+        "password": "vagrant",
+        "keys": [
+          ""
+        ],
+        "logger": "#<Logger:0x00007fba5bad2c90>",
+        "password_prompt": "#<Net::SSH::Prompt:0x00007fba5bb2d5a0>",
+        "user": "root"
       },
+      "services": [
+        "sshd.service",
+        "postgresql.service",
+        "pgpool.service"
+      ],
+      "hostname": "centos7"
+    },
+    "services": [
       {
-        "service_name": "rsyslog.service",
+        "service_name": "sshd.service",
         "load_state": "loaded",
         "active_state": "active",
         "sub_state": "running",
         "unit_file_state": "enabled",
         "type": "notify"
       },
+      ...,
       {
-        "service_name": "network.service",
-        "load_state": "loaded",
-        "active_state": "active",
-        "sub_state": "exited",
-        "unit_file_state": "bad",
-        "type": "forking"
-      },
-      {
-        "service_name": "systemd-tmpfiles-clean.timer",
-        "load_state": "loaded",
-        "active_state": "active",
-        "sub_state": "waiting",
-        "unit_file_state": "static",
-        "type": "n/a"
-      },
-      {
-        "service_name": "dummy_long_name_size_30_______",
+        "service_name": "pgpool.service",
         "load_state": "not-found",
         "active_state": "inactive",
         "sub_state": "dead",
-        "unit_file_state": "n/a",
-        "type": "n/a"
+        "unit_file_state": null,
+        "type": null
       }
     ]
   }
@@ -166,8 +235,8 @@ $ ssc check --format=json | jq
 ```sh
 $ ssc check --format=awesome_print
 [
-    [0] #<Struct:SystemdServiceCheck::Base::Result:0x7fabeca9ad40
-        server = #<Struct:SystemdServiceCheck::Base::Server:0x7fabec9c6ea0
+    [0] #<Struct:SystemdServiceCheck::SSH::Result:0x7fb39db78678
+        server = #<Struct:SystemdServiceCheck::Base::Server:0x7fb39dac6ec8
             env = "dev",
             hostname = "centos7",
             ip = "192.168.1.101",
@@ -176,22 +245,20 @@ $ ssc check --format=awesome_print
                            :keys => [
                     [0] ""
                 ],
-                         :logger => #<Logger:0x00007fabec9c6478 @level=4, @progname=nil, @default_formatter=#<Logger::Formatter:0x00007fabec9c63d8 @datetime_format=nil>, @formatter=nil, @logdev=#<Logger::LogDevice:0x00007fabec9c6360 @shift_period_suffix=nil, @shift_size=nil, @shift_age=nil, @filename=nil, @dev=#<IO:<STDERR>>, @mon_owner=nil, @mon_count=0, @mon_mutex=#<Thread::Mutex:0x00007fabec9c6248>>>,
-                :password_prompt => #<Net::SSH::Prompt:0x00007fabec9c61d0>,
+                         :logger => #<Logger:0x00007fb39dac5d98 @level=4, @progname=nil, @default_formatter=#<Logger::Formatter:0x00007fb39dac5cf8 @datetime_format=nil>, @formatter=nil, @logdev=#<Logger::LogDevice:0x00007fb39dac5ca8 @shift_period_suffix=nil, @shift_size=nil, @shift_age=nil, @filename=nil, @dev=#<IO:<STDERR>>, @mon_owner=nil, @mon_count=0, @mon_mutex=#<Thread::Mutex:0x00007fb39dac5c30>>>,
+                :password_prompt => #<Net::SSH::Prompt:0x00007fb39dac5bb8>,
                            :user => "root"
             },
+            role = nil,
             services = [
                 [0] "sshd.service",
-                [1] "firewalld.service",
-                [2] "rsyslog.service",
-                [3] "network.service",
-                [4] "systemd-tmpfiles-clean.timer",
+                ...,
                 [5] "dummy_long_name_size_30_______"
             ],
             user = "root"
         >,
         services = [
-            [0] #<Struct:SystemdServiceCheck::Base::Service:0x7fabed259798
+            [0] #<Struct:SystemdServiceCheck::SSH::Service:0x7fb39da6bc08
                 active_state = "active",
                 load_state = "loaded",
                 service_name = "sshd.service",
@@ -199,45 +266,57 @@ $ ssc check --format=awesome_print
                 type = "notify",
                 unit_file_state = "enabled"
             >,
-            [1] #<Struct:SystemdServiceCheck::Base::Service:0x7fabecabaeb0
-                active_state = "inactive",
-                load_state = "loaded",
-                service_name = "firewalld.service",
-                sub_state = "dead",
-                type = "dbus",
-                unit_file_state = "disabled"
-            >,
-            [2] #<Struct:SystemdServiceCheck::Base::Service:0x7fabecab7648
-                active_state = "active",
-                load_state = "loaded",
-                service_name = "rsyslog.service",
-                sub_state = "running",
-                type = "notify",
-                unit_file_state = "enabled"
-            >,
-            [3] #<Struct:SystemdServiceCheck::Base::Service:0x7fabeca9e3f0
-                active_state = "active",
-                load_state = "loaded",
-                service_name = "network.service",
-                sub_state = "exited",
-                type = "forking",
-                unit_file_state = "bad"
-            >,
-            [4] #<Struct:SystemdServiceCheck::Base::Service:0x7fabed8c6db0
-                active_state = "active",
-                load_state = "loaded",
-                service_name = "systemd-tmpfiles-clean.timer",
-                sub_state = "waiting",
-                type = "n/a",
-                unit_file_state = "static"
-            >,
-            [5] #<Struct:SystemdServiceCheck::Base::Service:0x7fabeca9b1f0
+            ...,
+            [5] #<Struct:SystemdServiceCheck::SSH::Service:0x7fb39db78bc8
                 active_state = "inactive",
                 load_state = "not-found",
                 service_name = "dummy_long_name_size_30_______",
                 sub_state = "dead",
-                type = "n/a",
-                unit_file_state = "n/a"
+                type = nil,
+                unit_file_state = nil
+            >
+        ]
+    >,
+    ...,
+    [2] #<Struct:SystemdServiceCheck::SSH::Result:0x7fb39e044cd8
+        server = #<Struct:SystemdServiceCheck::Base::Server:0x7fb39dac6888
+            env = "dev",
+            hostname = "centos7",
+            ip = "192.168.1.101",
+            options = {
+                       :password => "vagrant",
+                           :keys => [
+                    [0] ""
+                ],
+                         :logger => #<Logger:0x00007fb39e9c9858 @level=4, @progname=nil, @default_formatter=#<Logger::Formatter:0x00007fb39e9c9808 @datetime_format=nil>, @formatter=nil, @logdev=#<Logger::LogDevice:0x00007fb39e9c9790 @shift_period_suffix=nil, @shift_size=nil, @shift_age=nil, @filename=nil, @dev=#<IO:<STDERR>>, @mon_owner=nil, @mon_count=0, @mon_mutex=#<Thread::Mutex:0x00007fb39e9c96f0>>>,
+                :password_prompt => #<Net::SSH::Prompt:0x00007fb39dac5bb8>,
+                           :user => "root"
+            },
+            role = "db",
+            services = [
+                [0] "sshd.service",
+                [1] "postgresql.service",
+                [2] "pgpool.service"
+            ],
+            user = "root"
+        >,
+        services = [
+            [0] #<Struct:SystemdServiceCheck::SSH::Service:0x7fb39dbd5b98
+                active_state = "active",
+                load_state = "loaded",
+                service_name = "sshd.service",
+                sub_state = "running",
+                type = "notify",
+                unit_file_state = "enabled"
+            >,
+            ...,
+            [2] #<Struct:SystemdServiceCheck::SSH::Service:0x7fb39e045048
+                active_state = "inactive",
+                load_state = "not-found",
+                service_name = "pgpool.service",
+                sub_state = "dead",
+                type = nil,
+                unit_file_state = nil
             >
         ]
     >

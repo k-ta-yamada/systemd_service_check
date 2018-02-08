@@ -1,15 +1,14 @@
-require "systemd_service_check/version"
-require 'systemd_service_check/utils'
-require 'systemd_service_check/ssh'
-
 require 'net/ssh'
 require 'thor'
 require 'awesome_print'
 require 'table_print'
 require 'yaml'
 require 'json'
-
 require 'pry' # forDebug
+
+require "systemd_service_check/version"
+require 'systemd_service_check/utils'
+require 'systemd_service_check/ssh'
 
 module SystemdServiceCheck
   # Base
@@ -17,29 +16,19 @@ module SystemdServiceCheck
     include Utils
     include SSH
 
-    class InvalidOptionError < StandardError; end
+    attr_reader :envs, :role, :servers, :target_envs, :target_servers, :results
 
-    Server = Struct.new(:env, :ip, :user, :options, :services, :hostname) do
-      # @return [Array<String, String, Hash>] for Net::SSH.start(*conn_info)
-      # @see SSH
-      # @see Net::SSH
-      def conn_info
-        [ip, user, options]
-      end
-    end
+    # @param envs [Arrat<String>]
+    # @param yaml [String]
+    # @param role [String]
+    def initialize(envs, yaml, role = nil)
+      raise Utils::InvalidOptionError, "Argument `yaml` must not be blank." if blank? yaml
 
-    # TODO: setting by yaml
-    SHOW_GREP = /env/i
-
-    attr_reader :argv, :servers, :target_env, :target_servers, :results
-
-    def initialize(argv, yaml)
-      raise InvalidOptionError, "Argument `yaml` must not be nil or empty." if yaml.nil? || yaml.empty?
-
-      @argv           = argv || []
+      @envs           = envs || []
+      @role           = role.nil? || role.empty? ? nil : role
       @servers        = servers_from(yaml)
-      @target_env     = configure_target_envs(argv, @servers)
-      @target_servers = @servers.select { |s| @target_env.include?(s[:env]) }
+      @target_envs    = configure_target_envs(envs, @servers)
+      @target_servers = configure_target_servers(@servers, @target_envs, @role)
       @results        = []
     end
 
@@ -52,6 +41,12 @@ module SystemdServiceCheck
         { server:   result.server.to_h,
           services: result.services.map(&:to_h) }
       end.to_json
+    end
+
+    private
+
+    def blank?(yaml)
+      yaml.nil? || yaml.empty?
     end
   end
 end

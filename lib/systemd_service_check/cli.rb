@@ -11,23 +11,31 @@ module SystemdServiceCheck
   class CLI < Thor
     class InvalidFormatOptionError < StandardError; end
 
-    option :format,
-           type:    :string,
-           aliases: '-f',
-           desc:    "[t]able, [j]son, [a]wesome_print",
-           banner:  'table',
-           default: 'table'
     option :yaml,
            type:    :string,
            aliases: '-y',
            desc:    'setting yaml file',
-           banner:  './systemd_service_check.sample.yml',
            default: './systemd_service_check.sample.yml'
+    option :role,
+           type:    :string,
+           aliases: '-r',
+           desc:    'Target the specified role'
+    option :format,
+           type:    :string,
+           aliases: '-f',
+           desc:    '[t]able, [j]son, [a]wesome_print',
+           default: 'table'
 
-    desc "check ENV [ENV...] options", "check target ENV Servers."
-    def check(*env)
+    description = <<~DESCRIPTION
+      check target ENV Servers.
+      If `ENV` is omitted, the value of the first env of servers described in yaml is used.
+      If `all` is specified for `ENV`, all ENVs are targeted.
+    DESCRIPTION
+    desc 'check [ENV [ENV...]] [options]', description
+    def check(*envs) # rubocop:disable Metrics/AbcSize:
       raise InvalidFormatOptionError unless format_option_validate
-      @ssc = Base.new(env, options[:yaml])
+
+      @ssc = Base.new(envs, options[:yaml], options[:role])
       @ssc.run
       disp
     rescue InvalidFormatOptionError => e
@@ -36,7 +44,8 @@ module SystemdServiceCheck
       puts "  #{e.backtrace_locations.first}"
     end
 
-    desc "version", "return SystemdServiceCheck::VERSION"
+    desc 'version',
+         'return SystemdServiceCheck::VERSION'
     def version
       puts VERSION
     end
@@ -64,8 +73,9 @@ module SystemdServiceCheck
     end
 
     # rubocop:disable Metrics/LineLength
-    COLS = %i[env ip hostname user service_name].concat(SystemdServiceCheck.property_to_sym).freeze
+    COLS = %i[env role ip hostname user service_name].concat(Utils::PROPERTY_TO_SNAKE_SYM).freeze
     # rubocop:enable Metrics/LineLength
+
     def disp_table # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       service_name_width =
         @ssc.results.map(&:services).flatten.map(&:service_name).map(&:size).max
