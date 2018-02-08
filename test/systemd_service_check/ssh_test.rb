@@ -4,7 +4,7 @@ module SystemdServiceCheck
   class SSHTest < Minitest::Test
     include SystemdServiceCheck::SSH
 
-    # rubocop:disable Metrics/MethodLength:
+    # rubocop:disable Metrics/MethodLength
     def setup
       @systemctl_show_sshd =
         "systemctl show sshd.service -p #{Utils::PROPERTY.join(",")}"
