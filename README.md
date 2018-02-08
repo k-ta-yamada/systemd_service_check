@@ -2,6 +2,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/systemd_service_check.svg)](https://badge.fury.io/rb/systemd_service_check)
 [![Build Status](https://travis-ci.org/k-ta-yamada/systemd_service_check.svg?branch=master)](https://travis-ci.org/k-ta-yamada/systemd_service_check)
+[![Inline docs](http://inch-ci.org/github/k-ta-yamada/systemd_service_check.svg?branch=master&style=shields)](http://inch-ci.org/github/k-ta-yamada/systemd_service_check)
 
 This gem provide `ssc` command to check multiple `systemd service`
 etc on multiple remote servers using net-ssh.
