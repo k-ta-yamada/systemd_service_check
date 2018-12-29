@@ -2,6 +2,8 @@
 
 [![Gem Version](https://badge.fury.io/rb/systemd_service_check.svg)](https://badge.fury.io/rb/systemd_service_check)
 [![Build Status](https://travis-ci.org/k-ta-yamada/systemd_service_check.svg?branch=master)](https://travis-ci.org/k-ta-yamada/systemd_service_check)
+[![Maintainability](https://api.codeclimate.com/v1/badges/80093cb23065943782a0/maintainability)](https://codeclimate.com/github/k-ta-yamada/systemd_service_check/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/80093cb23065943782a0/test_coverage)](https://codeclimate.com/github/k-ta-yamada/systemd_service_check/test_coverage)
 [![Inline docs](http://inch-ci.org/github/k-ta-yamada/systemd_service_check.svg?branch=master&style=shields)](http://inch-ci.org/github/k-ta-yamada/systemd_service_check)
 
 This gem provide `ssc` command to check multiple `systemd service`

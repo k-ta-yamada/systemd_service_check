@@ -2,7 +2,6 @@ $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require "systemd_service_check"
 
 require "minitest/autorun"
-
 require "minitest/reporters"
 Minitest::Reporters.use! [
   Minitest::Reporters::SpecReporter.new,
@@ -17,5 +16,8 @@ Minitest::Reporters.use! [
   # Minitest::Reporters::HtmlReporter.new,     # => Generates an HTML report of the test results
   # rubocop:enable Metrics/LineLength
 ]
+
+require 'simplecov'
+SimpleCov.start
 
 require "pry" # forDebug
