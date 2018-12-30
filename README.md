@@ -1,10 +1,11 @@
-# SystemdServiceCheck
+[![Gem Version][gem_version-svg]][gem_version]
+[![Build Status][travis-svg]][travis]
+[![Downloads][downloads-svg]][gem_version]
+[![Inline docs][inch-ci-svg]][inch-ci]
+[![Code Climate][codeclimate-svg]][codeclimate]
+[![Test Coverage][codeclimate_cov-svg]][codeclimate_cov]
 
-[![Gem Version](https://badge.fury.io/rb/systemd_service_check.svg)](https://badge.fury.io/rb/systemd_service_check)
-[![Build Status](https://travis-ci.org/k-ta-yamada/systemd_service_check.svg?branch=master)](https://travis-ci.org/k-ta-yamada/systemd_service_check)
-[![Maintainability](https://api.codeclimate.com/v1/badges/80093cb23065943782a0/maintainability)](https://codeclimate.com/github/k-ta-yamada/systemd_service_check/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/80093cb23065943782a0/test_coverage)](https://codeclimate.com/github/k-ta-yamada/systemd_service_check/test_coverage)
-[![Inline docs](https://inch-ci.org/github/k-ta-yamada/systemd_service_check.svg?branch=master&style=shields)](https://inch-ci.org/github/k-ta-yamada/systemd_service_check)
+# SystemdServiceCheck
 
 This gem provide `ssc` command to check multiple `systemd service`
 etc on multiple remote servers using net-ssh.
@@ -343,3 +344,16 @@ The gem is available as open source under the terms of the [MIT License](https:/
 ## Code of Conduct
 
 Everyone interacting in the SystemdServiceCheck project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/k-ta-yamada/systemd_service_check/blob/master/CODE_OF_CONDUCT.md).
+
+
+[gem_version]: https://badge.fury.io/rb/systemd_service_check
+[gem_version-svg]: https://badge.fury.io/rb/systemd_service_check.svg
+[travis]: https://travis-ci.org/k-ta-yamada/systemd_service_check
+[travis-svg]: https://travis-ci.org/k-ta-yamada/systemd_service_check.svg
+[codeclimate]: https://codeclimate.com/github/k-ta-yamada/systemd_service_check
+[codeclimate-svg]: https://codeclimate.com/github/k-ta-yamada/systemd_service_check/badges/gpa.svg
+[codeclimate_cov]: https://codeclimate.com/github/k-ta-yamada/systemd_service_check/coverage
+[codeclimate_cov-svg]: https://codeclimate.com/github/k-ta-yamada/systemd_service_check/badges/coverage.svg
+[inch-ci]: https://inch-ci.org/github/k-ta-yamada/systemd_service_check
+[inch-ci-svg]: https://inch-ci.org/github/k-ta-yamada/systemd_service_check.svg?branch=master
+[downloads-svg]: https://ruby-gem-downloads-badge.herokuapp.com/systemd_service_check?type=total&total_label=&color=brightgreen
