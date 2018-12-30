@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/k-ta-yamada/systemd_service_check.svg?branch=master)](https://travis-ci.org/k-ta-yamada/systemd_service_check)
 [![Maintainability](https://api.codeclimate.com/v1/badges/80093cb23065943782a0/maintainability)](https://codeclimate.com/github/k-ta-yamada/systemd_service_check/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/80093cb23065943782a0/test_coverage)](https://codeclimate.com/github/k-ta-yamada/systemd_service_check/test_coverage)
-[![Inline docs](http://inch-ci.org/github/k-ta-yamada/systemd_service_check.svg?branch=master&style=shields)](http://inch-ci.org/github/k-ta-yamada/systemd_service_check)
+[![Inline docs](https://inch-ci.org/github/k-ta-yamada/systemd_service_check.svg?branch=master&style=shields)](https://inch-ci.org/github/k-ta-yamada/systemd_service_check)
 
 This gem provide `ssc` command to check multiple `systemd service`
 etc on multiple remote servers using net-ssh.
@@ -334,7 +334,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/k-ta-yamada/systemd_service_check. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/k-ta-yamada/systemd_service_check. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](https://contributor-covenant.org) code of conduct.
 
 ## License
 
