@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["k-ta-yamada"]
   spec.email         = ["key.luvless@gmail.com"]
 
-  spec.required_ruby_version = '>= 2.3.0'
+  spec.required_ruby_version = '>= 2.6.0'
 
   spec.summary       = 'This gem provide `ssc` command to check multiple `systemd service` etc on multiple remote servers using net-ssh.'
   spec.description   = 'This gem provide `ssc` command to check multiple `systemd service` etc on multiple remote servers using net-ssh.'
