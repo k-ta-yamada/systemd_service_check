@@ -4,6 +4,12 @@ Please confirm details from the following.
 
 https://github.com/k-ta-yamada/systemd_service_check/releases
 
+## v1.1.1
+
+2021-09-06 JST
+
+- required_ruby_version change to `>= 2.6.0` because Ruby 2.5 reaches EOL.
+
 ## v1.1.0
 
 2018-02-08 +0900
