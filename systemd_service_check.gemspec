@@ -37,6 +37,11 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "minitest"
   spec.add_development_dependency "rake"
+  # Workaround for cc-test-reporter with SimpleCov 0.18.
+  # Stop upgrading SimpleCov until the following issue will be resolved.
+  # https://github.com/codeclimate/test-reporter/issues/418
+  # https://github.com/codeclimate/test-reporter/issues/413
+  spec.add_development_dependency 'simplecov', '= 0.17'
 
   spec.add_development_dependency 'capture_stdout'
   spec.add_development_dependency 'minitest-reporters'
