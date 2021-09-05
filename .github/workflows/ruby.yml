@@ -1,0 +1,49 @@
+name: Ruby
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+    - cron: '0 21 * * SAT' # UTC => JST 06:00:00 SUN
+env:
+  # nektos/act: Run your GitHub Actions locally 🚀
+  # https://github.com/nektos/act
+  ACT:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version:
+          - '2.6'
+          - '2.7'
+          - '3.0'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Ruby, JRuby and TruffleRuby
+        uses: ruby/setup-ruby@v1.81.0
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
+      - name: Run tests
+        run: bundle exec rake
+
+      - name: Upload a Build Artifact
+        if: ${{ !env.ACT && matrix.ruby-version == '3.0' }}
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: coverage
+          path: coverage
+
+      - name: Report coverage to Code Climate
+        if: ${{ github.ref == 'refs/heads/master' && matrix.ruby-version == '3.0' }}
+        # Code Climate Coverage Action · Actions · GitHub Marketplace
+        # https://github.com/marketplace/actions/code-climate-coverage-action#example-with-only-upload
+        uses: paambaati/codeclimate-action@v2.7.5
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          debug: true
